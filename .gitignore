@@ -1,0 +1,7 @@
+
+*.exe
+*.dll
+build
+proj.android/app/.cxx
+proj.android/app/build
+proj.android/app/assets
