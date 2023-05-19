@@ -28,7 +28,7 @@
 USING_NS_AX;
 
 // uncomment below line, open debug console
-#define USE_WIN32_CONSOLE
+//#define USE_WIN32_CONSOLE
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
 {

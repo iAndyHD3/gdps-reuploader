@@ -11,6 +11,16 @@
 #include <optional>
 #include <fmt/format.h>
 
+//#define USE_WIN32_CONSOLE
+
+
+template <typename... T> 
+void fmt_print(fmt::format_string<T...> fmt, T&&... args) {
+	#ifdef USE_WIN32_CONSOLE
+	fmt::print(fmt, args);
+	#endif
+}
+
 
 constexpr int REUPLOAD_OK = 0;
 constexpr int GDPS_LOGIN_ERROR = 1;
@@ -91,10 +101,10 @@ void reupload_main(
 	RI.levelID = levelID;
 	
 	std::string gdpsShaPass = to_gjp2(gdpsPassword);
-	fmt::print("sha pass: {}", gdpsShaPass);
+	fmt_print("sha pass: {}", gdpsShaPass);
 
 	std::string postData = fmt::format("udid={}&userName={}&gjp2={}", generateUDID(), gdpsUsername, gdpsShaPass);
-	fmt::print("post data: {}\n", postData);
+	fmt_print("post data: {}\n", postData);
 	
 	auto request = createRequest("http://game.gdpseditor.com/server/accounts/loginGJAccount.php", postData, onLoginGDPS);
 	ax::network::HttpClient::getInstance()->send(request);
@@ -105,7 +115,7 @@ void reupload_main(
 void onLoginGDPS(ax::network::HttpClient* sender, ax::network::HttpResponse* response)
 {
 	std::string strResponse = getResponse(response);
-	fmt::print("strResponse: {}\n", strResponse);
+	fmt_print("strResponse: {}\n", strResponse);
 	
 	//error if: empty, starts with - (error) or does not contain comma (separator for acc id and user id)
 	if(strResponse.empty() || strResponse.starts_with('-') || strResponse.find(',') == std::string::npos)
@@ -132,7 +142,7 @@ void onLoginGDPS(ax::network::HttpClient* sender, ax::network::HttpResponse* res
 void onGetGDPSLevel(ax::network::HttpClient* sender, ax::network::HttpResponse* response)
 {
 	std::string strResponse = getResponse(response);
-	fmt::print("strResponse: {}\n", strResponse);
+	fmt_print("strResponse: {}\n", strResponse);
 	
 	//## = no level id was found + no levels were found
 	//pipe (|) is the separator = more levels were found (invalid level ID)
@@ -164,7 +174,7 @@ void onGetGDPSLevel(ax::network::HttpClient* sender, ax::network::HttpResponse* 
 void onDownloadGDPSLevel(ax::network::HttpClient* sender, ax::network::HttpResponse* response)
 {
 	std::string strResponse = getResponse(response);
-	fmt::print("strResponse: {}\n", strResponse);
+	fmt_print("strResponse: {}\n", strResponse);
 	
 	if(strResponse.empty() || strResponse.starts_with('-'))
 	{
@@ -183,7 +193,7 @@ void onDownloadGDPSLevel(ax::network::HttpClient* sender, ax::network::HttpRespo
 void onLoginGD(ax::network::HttpClient* sender, ax::network::HttpResponse* response)
 {
 	std::string strResponse = getResponse(response);
-	fmt::print("strResponse: {}\n", strResponse);
+	fmt_print("strResponse: {}\n", strResponse);
 	
 	//error if: empty, starts with - (error) or does not contain comma (separator for acc id and user id)
 	if(strResponse.empty() || strResponse.starts_with('-') || strResponse.find(',') == std::string::npos)
@@ -209,7 +219,7 @@ void onLoginGD(ax::network::HttpClient* sender, ax::network::HttpResponse* respo
 void onUploadLevelGD(ax::network::HttpClient* sender, ax::network::HttpResponse* response)
 {
 	std::string strResponse = getResponse(response);
-	fmt::print("strResponse: {}\n", strResponse);
+	fmt_print("strResponse: {}\n", strResponse);
 	
 	//error if: empty, starts with - (error) or does not contain comma (separator for acc id and user id)
 	if(strResponse.empty() || strResponse.starts_with('-'))
@@ -263,7 +273,7 @@ std::string getResponse(ax::network::HttpResponse* response)
 //std::string to avoid null terminator issues
 ax::network::HttpRequest* createRequest(const std::string& url, const std::string& postData, const ax::network::ccHttpRequestCallback& callback)
 {
-	fmt::print("URL: {}, POST: {}", url, postData);
+	fmt_print("URL: {}, POST: {}", url, postData);
 	auto req = new ax::network::HttpRequest();
 	req->setUrl(url.c_str());
 	req->setRequestType(ax::network::HttpRequest::Type::POST);
@@ -377,7 +387,7 @@ void setLabelText(std::string_view text)
 	ax::Node* stuff = ax::Director::getInstance()->getRunningScene()->getChildren().at(1);
 	if(!stuff) return;
 	
-	logNames(stuff);
+	//logNames(stuff);
 	
 	auto resultLabel = dynamic_cast<ax::Label*>(stuff->getChildByTag(1945));
 	if(!resultLabel) return;
